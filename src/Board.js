@@ -20,8 +20,8 @@ class Board extends Component {
     return (
       <div className="Board">
         {/* Contains score, and whose turn it is */}
-        <Header/>
-        <Grid squares={this.state.board}/>
+        {/* <Header/> */}
+        <Grid />
       </div>
     );
   }
