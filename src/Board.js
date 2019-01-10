@@ -8,20 +8,24 @@ class Board extends Component {
     super(props);
 
     this.state = {
-      playerTurn: true,
-      board: [
-        [false, false, false],
-        [false, false, false],
-        [false, false, false]
-      ]
+      currPlayer: 'O',
+      
     };
+
+    this.handleChangePlayer = this.handleChangePlayer.bind(this)
+  }
+
+  handleChangePlayer(){
+    this.setState({
+      currPlayer: (this.state.currPlayer === 'O' ? 'X' : 'O')
+    });
   }
   render() {
     return (
       <div className="Board">
         {/* Contains score, and whose turn it is */}
         {/* <Header/> */}
-        <Grid />
+        <Grid currPlayer={this.state.currPlayer} handleChangePlayer={this.handleChangePlayer}/>
       </div>
     );
   }

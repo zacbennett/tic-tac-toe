@@ -14,13 +14,16 @@ class Grid extends Component {
         [false, false, false]
       ],
       currPlayer: 'O',
-      win: 'Tie'
+      win: 'Tie',
+      hasWon: false
     };
     this.handleClick = this.handleClick.bind(this)
     this.checkWinner = this.checkWinner.bind(this)
     this.checkTie = this.checkTie.bind(this)
     this.checkWinAcross = this.checkWinAcross.bind(this)
     this.checkWinVertical = this.checkWinVertical.bind(this)
+    this.checkWinDiagonial = this.checkWinDiagonial.bind(this)
+    this.changeHasWon = this.changeHasWon.bind(this)
   }
   
   checkTie(){
@@ -33,24 +36,47 @@ class Grid extends Component {
       }
       return true;
   }
+  changeHasWon(){
+    this.setState(st => ({...st,hasWon: !st.hasWon}))
+  }
 
   checkWinAcross(y,x){
     // debugger;
     for(let item of this.state.board[y]){
-      if(item !== this.state.currPlayer){
+      if(item !== this.props.currPlayer){
         return false
       }
     }
     return true;
   }
+
   checkWinVertical(y,x){
     // debugger;
     for(let i = 0; i < this.state.board.length; i++){
-      if(this.state.board[i][x] !== this.state.currPlayer){
+      if(this.state.board[i][x] !== this.props.currPlayer){
         return false
       }
     }
     return true
+  }
+  checkWinDiagonial(y,x){
+   
+    let topLeft = this.state.board[0][0] 
+    let topRight = this.state.board[0][2]  
+    let bottomRight = this.state.board[2][2] 
+    let bottomLeft = this.state.board[2][0] 
+    let middle = this.state.board[1][1] 
+    
+    if(middle === this.props.currPlayer){
+      if(topLeft === this.props.currPlayer && bottomRight === this.props.currPlayer){
+        return true;
+      }
+      else if(topRight === this.props.currPlayer && bottomLeft === this.props.currPlayer){
+        return true;
+      }
+    }
+    
+    return false;
   }
   
 
@@ -60,8 +86,15 @@ class Grid extends Component {
     // look to see if there are currPlayer side to side, diagonal and up and down
     // side to side
     if(this.checkWinAcross(y,x)){
-      console.log('win!')
+      this.changeHasWon()
     }
+    if(this.checkWinVertical(y,x)){
+      this.changeHasWon()
+    }
+    if(this.checkWinDiagonial(y,x)){
+      this.changeHasWon()
+    }
+    
 
 
     // // diagonal
@@ -75,21 +108,18 @@ class Grid extends Component {
   }
 
   handleClick(y,x){
-    let newBoard = this.state.board;
-    newBoard[y][x] = this.state.currPlayer;
-
-    this.setState({
-      board: newBoard,
-      currPlayer: (this.state.currPlayer === 'O' ? 'X' : 'O')
-    });
-
-    this.checkWinner(y,x)
-
-    this.setState({
-      currPlayer: (this.state.currPlayer === 'O' ? 'X' : 'O')
-    });
-
-    
+    if(!this.state.hasWon){
+      let newBoard = this.state.board;
+      newBoard[y][x] = this.props.currPlayer;
+  
+      this.setState({
+        board: newBoard,
+      });
+  
+      this.checkWinner(y,x)
+      
+      this.props.handleChangePlayer();
+    }
 
   }
 
@@ -99,14 +129,17 @@ class Grid extends Component {
           <Square value={square} y={y} x={x} handleClick={this.handleClick}></Square>
         ))} 
       </div>
-    )
-  
+    ))
+    
+    let winCondition = (this.state.hasWon ? <h1>YOU WON</h1> : '' )
+
       
-    )
+    
 
     return (
       <div className="Grid">
         {grid}
+        {winCondition}
       </div>
     );
   }

@@ -7,12 +7,16 @@ class Square extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {class: ""}
+    this.state = {clicked: false}
     this.handleClick = this.handleClick.bind(this)
   }
 
   handleClick(evt){
-    this.props.handleClick(this.props.y,this.props.x);
+    // prevents from clicking more than once!
+    if(!this.state.clicked){
+      this.props.handleClick(this.props.y,this.props.x);
+      this.setState({clicked: true})
+    }
   }
   
   render() {
